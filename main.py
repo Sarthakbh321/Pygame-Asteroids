@@ -7,9 +7,12 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Asteroids vs.")
 
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 FPS = 60
 VELOCITY = 5
+
+BORDER = pygame.Rect(WIDTH/2-10/2, 0, 10, HEIGHT)
 
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 45
 
@@ -20,23 +23,31 @@ LEFT_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(LEFT_SPACESHIP_I
 
 def draw_graphics(left, right):
     WIN.fill(WHITE)
+    pygame.draw.rect(WIN, BLACK, BORDER)
     WIN.blit(LEFT_SPACESHIP, (left.x, left.y))
     WIN.blit(RIGHT_SPACESHIP, (right.x, right.y))
     pygame.display.update()
 
-def handle_input(left, right):
-    keys_pressed = pygame.key.get_pressed()
-
-    if(keys_pressed[pygame.K_w]):
+def handle_input_left(keys_pressed, left):
+    if(keys_pressed[pygame.K_w] and left.y > BORDER.y):
         left.y -= VELOCITY
-    if(keys_pressed[pygame.K_d]):
+    if(keys_pressed[pygame.K_d] and left.x < BORDER.x-SPACESHIP_WIDTH):
         left.x += VELOCITY
-    if (keys_pressed[pygame.K_s]):
+    if (keys_pressed[pygame.K_s] and left.y < (HEIGHT-SPACESHIP_HEIGHT)):
         left.y += VELOCITY
-    if (keys_pressed[pygame.K_a]):
+    if (keys_pressed[pygame.K_a] and left.x > 0):
         left.x -= VELOCITY
 
 
+def handle_input_right(keys_pressed, right):
+    if (keys_pressed[pygame.K_UP] and right.y > BORDER.y):
+        right.y -= VELOCITY
+    if (keys_pressed[pygame.K_RIGHT] and right.x < WIDTH-SPACESHIP_WIDTH):
+        right.x += VELOCITY
+    if (keys_pressed[pygame.K_DOWN] and right.y < (HEIGHT-SPACESHIP_HEIGHT)):
+        right.y += VELOCITY
+    if (keys_pressed[pygame.K_LEFT] and right.x > (BORDER.x)):
+        right.x -= VELOCITY
 
 def main():
     clock = pygame.time.Clock()
@@ -53,7 +64,10 @@ def main():
                 run = False
 
 
-        handle_input(left, right)
+
+        keys_pressed = pygame.key.get_pressed()
+        handle_input_left(keys_pressed, left)
+        handle_input_right(keys_pressed, right)
         draw_graphics(left, right)
 
     pygame.quit()
@@ -61,3 +75,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
